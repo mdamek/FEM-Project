@@ -12,7 +12,7 @@ namespace MESMARCIN
         public static readonly int NodesCount;
         public static readonly int ElementsCount;
         public static readonly int nPc;
-        private const string Path = @"\\KRYWAN\RedirectedUserFolders\mdamek\Pulpit\daneDoMes.txt";
+        private const string Path = @"C:\Users\marci\Desktop\daneDoMes.txt";
 
         static GlobalData()
         {
