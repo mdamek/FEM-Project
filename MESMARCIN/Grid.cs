@@ -26,8 +26,8 @@ namespace MESMARCIN
 
         private void FullNodesAndElements()
         {
-            var deltaX = GlobalData.H / (GlobalData.mH - 1);
-            var deltaY = GlobalData.L / (GlobalData.mL - 1);
+            var deltaX = GlobalData.L / (GlobalData.mL - 1);
+            var deltaY = GlobalData.H / (GlobalData.mH - 1);
             var k = 0;
             while (k < GlobalData.NodesCount)
             {
@@ -49,9 +49,9 @@ namespace MESMARCIN
                     continue;
                 }
                     Elements[actualElement].Id[0] = i - 1;
-                    Elements[actualElement].Id[1] = i;
+                    Elements[actualElement].Id[3] = i;
                     Elements[actualElement].Id[2] = GlobalData.mH + i;
-                    Elements[actualElement].Id[3] = GlobalData.mH + i - 1;
+                    Elements[actualElement].Id[1] = GlobalData.mH + i - 1;
                     actualElement++;
             }
         }
@@ -69,9 +69,21 @@ namespace MESMARCIN
 
         public void ShowElementsCornerValues()
         {
-            Console.WriteLine("Elements");
-            Console.WriteLine(ShowElement(Elements[GlobalData.mH - 2]) + "---------" + ShowElement(Elements[GlobalData.ElementsCount - 1]));
-            Console.WriteLine(ShowElement(Elements[0]) + "---------" + ShowElement(Elements[GlobalData.ElementsCount - (GlobalData.mH - 1)]));
+            //Console.WriteLine("Elements");
+            //Console.WriteLine(ShowElement(Elements[GlobalData.mH - 2]) + "---------" + ShowElement(Elements[GlobalData.ElementsCount - 1]));
+            //Console.WriteLine(ShowElement(Elements[0]) + "---------" + ShowElement(Elements[GlobalData.ElementsCount - (GlobalData.mH - 1)]));
+            Console.WriteLine(Nodes[Elements[GlobalData.ElementsCount - 1].Id[0]].X);
+            Console.WriteLine(Nodes[Elements[GlobalData.ElementsCount - 1].Id[0]].Y);
+            Console.WriteLine(Nodes[Elements[GlobalData.ElementsCount - 1].Id[1]].X);
+            Console.WriteLine(Nodes[Elements[GlobalData.ElementsCount - 1].Id[1]].Y);
+            Console.WriteLine(Nodes[Elements[GlobalData.ElementsCount - 1].Id[2]].X);
+            Console.WriteLine(Nodes[Elements[GlobalData.ElementsCount - 1].Id[2]].Y);
+            Console.WriteLine(Nodes[Elements[GlobalData.ElementsCount - 1].Id[3]].X);
+            Console.WriteLine(Nodes[Elements[GlobalData.ElementsCount - 1].Id[3]].Y);
+
+
+
+
         }
 
         private string ShowElement(Element element)

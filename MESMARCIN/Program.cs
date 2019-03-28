@@ -9,6 +9,8 @@ namespace MESMARCIN
             var grid = new Grid();
             grid.ShowNodesCornerValues();
             grid.ShowElementsCornerValues();
+
+            var universalElement = new UniversalElement();
             Console.ReadKey();
         }
     }

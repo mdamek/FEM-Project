@@ -11,6 +11,7 @@ namespace MESMARCIN
         public static readonly int mL;
         public static readonly int NodesCount;
         public static readonly int ElementsCount;
+        public static readonly int nPc;
         private const string Path = @"C:\Users\marci\Desktop\daneDoMes.txt";
 
         static GlobalData()
@@ -20,8 +21,9 @@ namespace MESMARCIN
             L = Convert.ToDouble(readFile[1].Split('=')[1]);
             mH = Convert.ToInt32(readFile[2].Split('=')[1]);
             mL = Convert.ToInt32(readFile[3].Split('=')[1]);
+            nPc = Convert.ToInt32(readFile[4].Split('=')[1]);
             NodesCount = mH * mL;
-            ElementsCount = (mH - 1) * (mH - 1);
+            ElementsCount = (mH - 1) * (mL - 1);
         }
     }
 }
