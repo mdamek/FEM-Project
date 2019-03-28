@@ -67,19 +67,19 @@ namespace MESMARCIN
                               Nodes[GlobalData.NodesCount - GlobalData.mH].Y);
         }
 
-        public void ShowElementsCornerValues()
+        public void ShowElementsCornerValues(int index)
         {
             //Console.WriteLine("Elements");
             //Console.WriteLine(ShowElement(Elements[GlobalData.mH - 2]) + "---------" + ShowElement(Elements[GlobalData.ElementsCount - 1]));
             //Console.WriteLine(ShowElement(Elements[0]) + "---------" + ShowElement(Elements[GlobalData.ElementsCount - (GlobalData.mH - 1)]));
-            Console.WriteLine(Nodes[Elements[GlobalData.ElementsCount - 1].Id[0]].X);
-            Console.WriteLine(Nodes[Elements[GlobalData.ElementsCount - 1].Id[0]].Y);
-            Console.WriteLine(Nodes[Elements[GlobalData.ElementsCount - 1].Id[1]].X);
-            Console.WriteLine(Nodes[Elements[GlobalData.ElementsCount - 1].Id[1]].Y);
-            Console.WriteLine(Nodes[Elements[GlobalData.ElementsCount - 1].Id[2]].X);
-            Console.WriteLine(Nodes[Elements[GlobalData.ElementsCount - 1].Id[2]].Y);
-            Console.WriteLine(Nodes[Elements[GlobalData.ElementsCount - 1].Id[3]].X);
-            Console.WriteLine(Nodes[Elements[GlobalData.ElementsCount - 1].Id[3]].Y);
+            Console.WriteLine(Nodes[Elements[index].Id[0]].X);
+            Console.WriteLine(Nodes[Elements[index].Id[0]].Y);
+            Console.WriteLine(Nodes[Elements[index].Id[1]].X);
+            Console.WriteLine(Nodes[Elements[index].Id[1]].Y);
+            Console.WriteLine(Nodes[Elements[index].Id[2]].X);
+            Console.WriteLine(Nodes[Elements[index].Id[2]].Y);
+            Console.WriteLine(Nodes[Elements[index].Id[3]].X);
+            Console.WriteLine(Nodes[Elements[index].Id[3]].Y);
 
 
 

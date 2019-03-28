@@ -22,8 +22,7 @@ namespace MESMARCIN
             this.SetUpWspCAndWeightsC();
             this.SetUpdNdE();
             this.SetUpdNdN();
-            this.SetUpN();
-            PrintMatrix(dNdE);         
+            this.SetUpN();    
         }
 
         private void SetUpN()
@@ -131,28 +130,15 @@ namespace MESMARCIN
             }
         }
 
-        private static void PrintMatrix(double[ , ] matrix)
-        {
-            for (var i = 0; i < matrix.GetLength(0); i++)
-            {
-                for (var j = 0; j < matrix.GetLength(1); j++)
-                {
-                    Console.Write(matrix[i, j] + " ");
-                }
-
-                Console.WriteLine();
-            }
-        }
-
         private void SetUpWspCAndWeightsC()
         {
             switch (GlobalData.nPc)
             {
                 case 2:
-                    this.wspC[0] = - 0.577;
-                    this.wspC[1] = 0.577;
-                    this.weightsC[0] = 0;
-                    this.weightsC[1] = 0;
+                    this.wspC[0] = -1/ Math.Sqrt(3);
+                    this.wspC[1] = 1 / Math.Sqrt(3);
+                    this.weightsC[0] = 1;
+                    this.weightsC[1] = 1;
                     break;
                 case 3:
                     this.wspC[0] = -0.77;
@@ -164,7 +150,5 @@ namespace MESMARCIN
                     break;
             }
         }
-
-        
     }
 }
