@@ -12,6 +12,8 @@ namespace MESMARCIN
             var hL = newGrid.Elements[0].HL;
             MatrixHelper.PrintMatrix(hL);
             var ue = new UniversalElement();
+            Console.WriteLine("TUTAJ");
+            MatrixHelper.PrintMatrix(ue.NOutside);
             Console.ReadKey();
         }
 
@@ -20,7 +22,7 @@ namespace MESMARCIN
             const int K = 30;
             const double c = 2000;
             const double ro = 1000;
-            const double alfa = 0.3;
+            const double alfa = 25;
             var universalElemenet = new UniversalElement();
             for (var i = 0; i < grid.Elements.Length; i++)
             {
@@ -81,16 +83,83 @@ namespace MESMARCIN
                     var actualC = MatrixHelper.MatrixScalarMultiplication(cRazyCT, detAndWeights * ro * c);
                     elementC = MatrixHelper.AddMatrix(elementC, actualC);
                 }
-                //Macierz H + czescioweP 
+                //Macierz H + czescioweP
+                var elementToAddToH = new double[,]
+                {
+                    {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}
+                };
                 for (var j = 0; j < 8; j++)
                 {
-                    var elementToAddToH = new double[,]
+                    if (j == 0 || j == 1)
                     {
-                        {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}
-                    };
-                    //TODO!!! Jak wyzej np dla N
+                        if (grid.Nodes[grid.Elements[i].Id[0]].IsMarginal &&
+                            grid.Nodes[grid.Elements[i].Id[1]].IsMarginal)
+                        {
+                            var detBoku = GlobalData.L / GlobalData.mL * 0.5;
+                            var nVector = new double[4];
+                            for (var k = 0; k < 4; k++)
+                            {
+                                nVector[k] = universalElemenet.NOutside[j, k];
+                            }
+                            var pcMatrix = MatrixHelper.TranspositionAndMultipication(nVector);
+                            elementToAddToH = MatrixHelper.AddMatrix(elementToAddToH,
+                                MatrixHelper.MatrixScalarMultiplication(pcMatrix, detBoku));
+                        }
+                    }
+                    if (j == 2 || j == 3)
+                    {
+                        if (grid.Nodes[grid.Elements[i].Id[1]].IsMarginal &&
+                            grid.Nodes[grid.Elements[i].Id[2]].IsMarginal)
+                        {
+                            var detBoku = GlobalData.H / GlobalData.mH * 0.5;
+                            var nVector = new double[4];
+                            for (var k = 0; k < 4; k++)
+                            {
+                                nVector[k] = universalElemenet.NOutside[j, k];
+                            }
+                            var pcMatrix = MatrixHelper.TranspositionAndMultipication(nVector);
+                            elementToAddToH = MatrixHelper.AddMatrix(elementToAddToH,
+                                MatrixHelper.MatrixScalarMultiplication(pcMatrix, detBoku));
+                        }
+                    }
+                    if (j == 4 || j == 5)
+                    {
+                        if (grid.Nodes[grid.Elements[i].Id[2]].IsMarginal &&
+                            grid.Nodes[grid.Elements[i].Id[3]].IsMarginal)
+                        {
+                            var detBoku = GlobalData.L / GlobalData.mL * 0.5;
+                            var nVector = new double[4];
+                            for (var k = 0; k < 4; k++)
+                            {
+                                nVector[k] = universalElemenet.NOutside[j, k];
+                            }
+                            var pcMatrix = MatrixHelper.TranspositionAndMultipication(nVector);
+                            elementToAddToH = MatrixHelper.AddMatrix(elementToAddToH,
+                                MatrixHelper.MatrixScalarMultiplication(pcMatrix, detBoku));
+                        }
+                    }
+                    if (j == 6 || j == 7)
+                    {
+                        if (grid.Nodes[grid.Elements[i].Id[3]].IsMarginal &&
+                            grid.Nodes[grid.Elements[i].Id[0]].IsMarginal)
+                        {
+                            var detBoku = GlobalData.H / GlobalData.mH * 0.5;
+                            var nVector = new double[4];
+                            for (var k = 0; k < 4; k++)
+                            {
+                                nVector[k] = universalElemenet.NOutside[j, k];
+                            }
+                            var pcMatrix = MatrixHelper.TranspositionAndMultipication(nVector);
+                            elementToAddToH = MatrixHelper.AddMatrix(elementToAddToH,
+                                MatrixHelper.MatrixScalarMultiplication(pcMatrix, detBoku));
+                        }
+                    }
                 }
 
+                elementToAddToH = MatrixHelper.MatrixScalarMultiplication(elementToAddToH, alfa);
+                Console.WriteLine("HERE");
+                MatrixHelper.PrintMatrix(elementToAddToH);
+                elementH = MatrixHelper.AddMatrix(elementH, elementToAddToH);
                 grid.Elements[i].HL = elementH;
                 grid.Elements[i].CL = elementC;
             }

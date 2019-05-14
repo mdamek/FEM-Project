@@ -168,10 +168,10 @@ namespace MESMARCIN
                         NOutside[1, i] = math.NFormulas[i].Invoke(wspC[1], -1);
                         NOutside[2, i] = math.NFormulas[i].Invoke(1, wspC[0]);
                         NOutside[3, i] = math.NFormulas[i].Invoke(1, wspC[1]);
-                        NOutside[0, i] = math.NFormulas[i].Invoke(wspC[1], 1);
-                        NOutside[1, i] = math.NFormulas[i].Invoke(wspC[0], 1);
-                        NOutside[2, i] = math.NFormulas[i].Invoke(-1, wspC[1]);
-                        NOutside[3, i] = math.NFormulas[i].Invoke(-1, wspC[0]);
+                        NOutside[4, i] = math.NFormulas[i].Invoke(wspC[1], 1);
+                        NOutside[5, i] = math.NFormulas[i].Invoke(wspC[0], 1);
+                        NOutside[6, i] = math.NFormulas[i].Invoke(-1, wspC[1]);
+                        NOutside[7, i] = math.NFormulas[i].Invoke(-1, wspC[0]);
                         }
                     break;
                 }
