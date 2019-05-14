@@ -35,8 +35,13 @@ namespace MESMARCIN
                 {
                     for (var j = 0; j < GlobalData.mH; j++)
                     {
+                        Nodes[k].IsMarginal = false;
                         Nodes[k].X = i * deltaX;
                         Nodes[k].Y = j * deltaY;
+                        if (Nodes[k].X == 0 || Nodes[k].X == GlobalData.L)
+                            Nodes[k].IsMarginal = true;
+                        if (Nodes[k].Y == 0 || Nodes[k].Y == GlobalData.H)
+                            Nodes[k].IsMarginal = true;
                         k++;
                     }
                 }
