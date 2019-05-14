@@ -7,17 +7,13 @@ namespace MESMARCIN
     {
         static void Main(string[] args)
         {
-            var grid = new Grid();
-            var newGrid = CalculateLocalMatrix(grid);
-            var hL = newGrid.Elements[0].HL;
-            MatrixHelper.PrintMatrix(hL);
-            var ue = new UniversalElement();
-            Console.WriteLine("TUTAJ");
-            MatrixHelper.PrintMatrix(ue.NOutside);
+            var newGrid = CalculateLocalMatrix(new Grid());
+            var finalGrid = AggregateToGlobalMatrix(newGrid);
+            MatrixHelper.PrintMatrix(finalGrid.HG);
             Console.ReadKey();
         }
 
-        public static Grid CalculateLocalMatrix(Grid grid)
+        private static Grid CalculateLocalMatrix(Grid grid)
         {
             const int K = 30;
             const double c = 2000;
@@ -166,6 +162,22 @@ namespace MESMARCIN
 
            
 
+            return grid;
+        }
+
+        private static Grid AggregateToGlobalMatrix(Grid grid)
+        {
+            foreach (var actualElement in grid.Elements)
+            {
+                for (var i = 0; i < 4; i++)
+                {
+                    for (var j = 0; j < 4; j++)
+                    {
+                        grid.HG[actualElement.Id[i], actualElement.Id[j]] += actualElement.HL[i, j];
+                        grid.HC[actualElement.Id[i], actualElement.Id[j]] += actualElement.CL[i, j];
+                    }
+                }
+            }
             return grid;
         }
     }

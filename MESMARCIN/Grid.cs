@@ -4,8 +4,10 @@ namespace MESMARCIN
 {
     public class Grid
     {
-        public Element[] Elements { get; set; }
-        public Node[] Nodes { get; set; }
+        public Element[] Elements { get; }
+        public Node[] Nodes { get; }
+        public double [,] HG { get; }
+        public double[,] HC { get; }
 
         public Grid()
         {
@@ -20,7 +22,8 @@ namespace MESMARCIN
             {
                 this.Nodes[i] = new Node();
             }
-
+            this.HG = new double[GlobalData.mH * GlobalData.mL, GlobalData.mH * GlobalData.mL];
+            this.HC = new double[GlobalData.mH * GlobalData.mL, GlobalData.mH * GlobalData.mL];
             FullNodesAndElements();
         }
 
