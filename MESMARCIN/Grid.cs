@@ -7,7 +7,8 @@ namespace MESMARCIN
         public Element[] Elements { get; }
         public Node[] Nodes { get; }
         public double [,] HG { get; }
-        public double[,] HC { get; }
+        public double[,] CG { get; }
+        public double [] PG { get; }
 
         public Grid()
         {
@@ -22,81 +23,63 @@ namespace MESMARCIN
             {
                 this.Nodes[i] = new Node();
             }
-            this.HG = new double[GlobalData.mH * GlobalData.mL, GlobalData.mH * GlobalData.mL];
-            this.HC = new double[GlobalData.mH * GlobalData.mL, GlobalData.mH * GlobalData.mL];
+            this.HG = new double[GlobalData.NodesHeightNumber * GlobalData.NodesLengthNumber, GlobalData.NodesHeightNumber * GlobalData.NodesLengthNumber];
+            this.CG = new double[GlobalData.NodesHeightNumber * GlobalData.NodesLengthNumber, GlobalData.NodesHeightNumber * GlobalData.NodesLengthNumber];
+            this.PG = new double[GlobalData.NodesCount];
             FullNodesAndElements();
+
+            //uzupelniam nody startowymi temperaturami
+            var initialTemperatureVector = new double[Nodes.Length];
+            for (var i = 0; i < initialTemperatureVector.Length; i++)
+            {
+                initialTemperatureVector[i] = GlobalData.InitialTemperature;
+            }
+            SetNodesTemperature(initialTemperatureVector);
         }
 
         private void FullNodesAndElements()
         {
-            var deltaX = GlobalData.L / (GlobalData.mL - 1);
-            var deltaY = GlobalData.H / (GlobalData.mH - 1);
+            var deltaX = GlobalData.Length / (GlobalData.NodesLengthNumber - 1);
+            var deltaY = GlobalData.Height / (GlobalData.NodesHeightNumber - 1);
             var k = 0;
             while (k < GlobalData.NodesCount)
             {
-                for (var i = 0; i < GlobalData.mL; i++)
+                for (var i = 0; i < GlobalData.NodesLengthNumber; i++)
                 {
-                    for (var j = 0; j < GlobalData.mH; j++)
+                    for (var j = 0; j < GlobalData.NodesHeightNumber; j++)
                     {
                         Nodes[k].IsMarginal = false;
                         Nodes[k].X = i * deltaX;
                         Nodes[k].Y = j * deltaY;
-                        if (Nodes[k].X == 0 || Nodes[k].X == GlobalData.L)
+                        if (Nodes[k].X == 0 || Nodes[k].X == GlobalData.Length)
                             Nodes[k].IsMarginal = true;
-                        if (Nodes[k].Y == 0 || Nodes[k].Y == GlobalData.H)
+                        if (Nodes[k].Y == 0 || Nodes[k].Y == GlobalData.Height)
                             Nodes[k].IsMarginal = true;
                         k++;
                     }
                 }
             }
             var actualElement = 0;
-            for (var i = 1; i < GlobalData.ElementsCount + GlobalData.mL - 1; i++)
+            for (var i = 1; i < GlobalData.ElementsCount + GlobalData.NodesLengthNumber - 1; i++)
             {
-                if (i % (GlobalData.mH) == 0)
+                if (i % (GlobalData.NodesHeightNumber) == 0)
                 {
                     continue;
                 }
                     Elements[actualElement].Id[0] = i - 1;
                     Elements[actualElement].Id[3] = i;
-                    Elements[actualElement].Id[2] = GlobalData.mH + i;
-                    Elements[actualElement].Id[1] = GlobalData.mH + i - 1;
+                    Elements[actualElement].Id[2] = GlobalData.NodesHeightNumber + i;
+                    Elements[actualElement].Id[1] = GlobalData.NodesHeightNumber + i - 1;
                     actualElement++;
             }
         }
 
-        public void ShowNodesCornerValues()
+        public void SetNodesTemperature(double [] temperatures)
         {
-            Console.WriteLine("Nodes");
-            Console.WriteLine("X|Y");
-            Console.WriteLine(Nodes[GlobalData.mH - 1].X + "|" + Nodes[GlobalData.mH - 1].Y + "---------" +
-                              Nodes[GlobalData.NodesCount - 1].X + "|" + Nodes[GlobalData.NodesCount - 1].Y);
-            Console.WriteLine(Nodes[0].X + "|" + Nodes[0].Y + "---------" +
-                              Nodes[GlobalData.NodesCount - GlobalData.mH].X + "|" +
-                              Nodes[GlobalData.NodesCount - GlobalData.mH].Y);
-        }
-
-        public void ShowElementsCornerValues(int index)
-        {
-            //Console.WriteLine("Elements");
-            //Console.WriteLine(ShowElement(Elements[GlobalData.mH - 2]) + "---------" + ShowElement(Elements[GlobalData.ElementsCount - 1]));
-            //Console.WriteLine(ShowElement(Elements[0]) + "---------" + ShowElement(Elements[GlobalData.ElementsCount - (GlobalData.mH - 1)]));
-            Console.WriteLine(Nodes[Elements[index].Id[0]].X);
-            Console.WriteLine(Nodes[Elements[index].Id[0]].Y);
-            Console.WriteLine(Nodes[Elements[index].Id[1]].X);
-            Console.WriteLine(Nodes[Elements[index].Id[1]].Y);
-            Console.WriteLine(Nodes[Elements[index].Id[2]].X);
-            Console.WriteLine(Nodes[Elements[index].Id[2]].Y);
-            Console.WriteLine(Nodes[Elements[index].Id[3]].X);
-            Console.WriteLine(Nodes[Elements[index].Id[3]].Y);
-
-
-
-
-        }
-
-        private string ShowElement(Element element)
-        {
-            return  element.Id[0] +"|"+ element.Id[1] + "|" + element.Id[2] + "|" + element.Id[3];
+            for (var i = 0; i < Nodes.Length; i++)
+            {
+                Nodes[i].T = temperatures[i];
+            }
         }
     }
 }
