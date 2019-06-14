@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.AccessControl;
 
-namespace MESMARCIN
+namespace MesMarcin
 {
     public class UniversalElement
     {

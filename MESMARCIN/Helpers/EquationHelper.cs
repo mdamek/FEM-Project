@@ -1,4 +1,4 @@
-﻿namespace MESMARCIN
+﻿namespace MesMarcin
 {
     public static class EquationHelper
     {

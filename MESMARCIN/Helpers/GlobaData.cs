@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace MESMARCIN
+namespace MesMarcin
 {
     public static class GlobalData
     {

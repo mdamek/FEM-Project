@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 
-namespace MESMARCIN
+namespace MesMarcin
 {
-    public static class MatrixCalc
+    public static class MatrixCalculator
     {
         public static double[,] TranspositionAndMultiplication(double[] vector)
         {

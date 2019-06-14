@@ -46,18 +46,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DifferentialFormulas.cs" />
-    <Compile Include="Element.cs" />
-    <Compile Include="EquationHelper.cs" />
-    <Compile Include="GlobaData.cs" />
-    <Compile Include="Grid.cs" />
-    <Compile Include="Jacobian.cs" />
-    <Compile Include="MatrixCalc.cs" />
-    <Compile Include="Node.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Helpers\Aggregator.cs" />
+    <Compile Include="Helpers\DifferentialFormulas.cs" />
+    <Compile Include="Models\Element.cs" />
+    <Compile Include="Helpers\EquationHelper.cs" />
+    <Compile Include="Helpers\GlobaData.cs" />
+    <Compile Include="Models\Grid.cs" />
+    <Compile Include="Models\Jacobian.cs" />
+    <Compile Include="Helpers\MatrixCalculator.cs" />
+    <Compile Include="Models\Node.cs" />
+    <Compile Include="MesProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Side.cs" />
-    <Compile Include="UniversalElement.cs" />
+    <Compile Include="Models\Side.cs" />
+    <Compile Include="Helpers\UniversalElement.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

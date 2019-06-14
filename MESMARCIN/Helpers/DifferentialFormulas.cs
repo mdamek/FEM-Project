@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MESMARCIN
+namespace MesMarcin
 {
     public class DifferentialFormulas
     {
