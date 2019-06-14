@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MESMARCIN
+﻿namespace MESMARCIN
 {
     public class Grid
     {
@@ -28,7 +26,6 @@ namespace MESMARCIN
             this.PG = new double[GlobalData.NodesCount];
             FullNodesAndElements();
 
-            //uzupelniam nody startowymi temperaturami
             var initialTemperatureVector = new double[Nodes.Length];
             for (var i = 0; i < initialTemperatureVector.Length; i++)
             {
@@ -39,7 +36,7 @@ namespace MESMARCIN
 
         private void FullNodesAndElements()
         {
-            var deltaX = GlobalData.Length / (GlobalData.NodesLengthNumber - 1);
+            var deltaX = GlobalData.Width / (GlobalData.NodesLengthNumber - 1);
             var deltaY = GlobalData.Height / (GlobalData.NodesHeightNumber - 1);
             var k = 0;
             while (k < GlobalData.NodesCount)
@@ -51,7 +48,7 @@ namespace MESMARCIN
                         Nodes[k].IsMarginal = false;
                         Nodes[k].X = i * deltaX;
                         Nodes[k].Y = j * deltaY;
-                        if (Nodes[k].X == 0 || Nodes[k].X == GlobalData.Length)
+                        if (Nodes[k].X == 0 || Nodes[k].X == GlobalData.Width)
                             Nodes[k].IsMarginal = true;
                         if (Nodes[k].Y == 0 || Nodes[k].Y == GlobalData.Height)
                             Nodes[k].IsMarginal = true;

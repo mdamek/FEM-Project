@@ -48,14 +48,15 @@
   <ItemGroup>
     <Compile Include="DifferentialFormulas.cs" />
     <Compile Include="Element.cs" />
-    <Compile Include="EquationSolver.cs" />
+    <Compile Include="EquationHelper.cs" />
     <Compile Include="GlobaData.cs" />
     <Compile Include="Grid.cs" />
-    <Compile Include="Jakobian.cs" />
-    <Compile Include="MatrixHelper.cs" />
+    <Compile Include="Jacobian.cs" />
+    <Compile Include="MatrixCalc.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Side.cs" />
     <Compile Include="UniversalElement.cs" />
   </ItemGroup>
   <ItemGroup>

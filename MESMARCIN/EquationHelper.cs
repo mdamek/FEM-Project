@@ -1,14 +1,12 @@
 ﻿namespace MESMARCIN
 {
-    public class EquationSolver
+    public static class EquationHelper
     {
         public static double[] Solve(double[,] matrix, double[] vector)
         {
             var n = vector.Length;
             var x = new double[n];
-
             var tmpA = new double[n, n + 1];
-
             for (var i = 0; i < n; i++)
             {
                 for (var j = 0; j < n; j++)
@@ -17,9 +15,7 @@
                 }
                 tmpA[i, n] = vector[i];
             }
-
             double tmp;
-
             for (var k = 0; k < n - 1; k++)
             {
                 for (var i = k + 1; i < n; i++)

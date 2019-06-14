@@ -16,11 +16,11 @@ namespace MESMARCIN
         public UniversalElement()
         {
             this.nN = 4;
-            this.wspC = new double[GlobalData.nPc];
-            this.weightsC = new double[GlobalData.nPc];
-            this.dNdE = new double[GlobalData.nPc * GlobalData.nPc, nN];
-            this.dNdN = new double[GlobalData.nPc * GlobalData.nPc, nN];
-            this.N = new double[GlobalData.nPc * GlobalData.nPc, nN];
+            this.wspC = new double[GlobalData.NPc];
+            this.weightsC = new double[GlobalData.NPc];
+            this.dNdE = new double[GlobalData.NPc * GlobalData.NPc, nN];
+            this.dNdN = new double[GlobalData.NPc * GlobalData.NPc, nN];
+            this.N = new double[GlobalData.NPc * GlobalData.NPc, nN];
             this.NOutside = new double[8,nN];
             this.SetUpWspCAndWeightsC();
             this.SetUpdNdE();
@@ -32,7 +32,7 @@ namespace MESMARCIN
         private void SetUpN()
         {
             var math = new DifferentialFormulas();
-            switch (GlobalData.nPc)
+            switch (GlobalData.NPc)
             {
                 case 2:
                 {
@@ -67,7 +67,7 @@ namespace MESMARCIN
         private void SetUpdNdN()
         {
             var math = new DifferentialFormulas();
-            switch (GlobalData.nPc)
+            switch (GlobalData.NPc)
             {
                 case 2:
                 {
@@ -102,7 +102,7 @@ namespace MESMARCIN
         private void SetUpdNdE()
         {
             var math = new DifferentialFormulas();
-            switch (GlobalData.nPc)
+            switch (GlobalData.NPc)
             {
                 case 2:
                 {
@@ -136,7 +136,7 @@ namespace MESMARCIN
 
         private void SetUpWspCAndWeightsC()
         {
-            switch (GlobalData.nPc)
+            switch (GlobalData.NPc)
             {
                 case 2:
                     this.wspC[0] = -1/ Math.Sqrt(3);
@@ -158,7 +158,7 @@ namespace MESMARCIN
         private void SetUpNOutside()
         {
             var math = new DifferentialFormulas();
-            switch (GlobalData.nPc)
+            switch (GlobalData.NPc)
             {
                 case 2:
                 {

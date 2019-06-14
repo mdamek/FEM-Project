@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MESMARCIN
 {
-    public static class MatrixHelper
+    public static class MatrixCalc
     {
-        public static double[,] TranspositionAndMultipication(double[] vector)
+        public static double[,] TranspositionAndMultiplication(double[] vector)
         {
             var matrix = new double[vector.Length, vector.Length];
             for (var i = 0; i < vector.Length; i++)
@@ -82,9 +79,9 @@ namespace MESMARCIN
 
         public static void PrintVector(double[] vector)
         {
-            for (var i = 0; i < vector.Length; i++)
+            foreach (var value in vector)
             {
-                Console.Write(vector[i] + " ");
+                Console.Write(value + " ");
             }
         }
 
@@ -100,7 +97,6 @@ namespace MESMARCIN
             }
             return answer;
         }
-
         public static (double min, double max) FindMinAndMax(double[] vector) => (vector.Min(), vector.Max());
     }
 }

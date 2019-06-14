@@ -14,50 +14,36 @@ namespace MESMARCIN
             {
                 nextT[i] = finalGrid.Nodes[i].T;
             }
-            var dT = 50.0;
 
-            //Console.WriteLine("H global matrix");
-            //MatrixHelper.PrintMatrix(finalGrid.HG);
-           // Console.WriteLine("C global matrix");
-            //MatrixHelper.PrintMatrix(finalGrid.CG);
-            //Console.WriteLine("H + C/dT global matrix");
-
-            var interationNumer = GlobalData.SimulationTime /dT;
+            var interationNumer = GlobalData.SimulationTime /GlobalData.Dt;
             for (var i = 0; i < interationNumer; i++)
             {
-                var HPlusCdT = MatrixHelper.AddMatrix(finalGrid.HG, MatrixHelper.MatrixScalarMultiplication(finalGrid.CG, 1.0 / dT));
-                var CdT = MatrixHelper.MatrixScalarMultiplication(finalGrid.CG, 1.0 / dT);
-                var CdTT0 = MatrixHelper.MatrixVectorMultiplication(CdT, nextT);
-                var PPlusCtDT0 = MatrixHelper.AddVectors(finalGrid.PG, CdTT0);
-                nextT = EquationSolver.Solve(HPlusCdT, PPlusCtDT0);
+                var HPlusCdT = MatrixCalc.AddMatrix(finalGrid.HG, MatrixCalc.MatrixScalarMultiplication(finalGrid.CG, 1.0 / GlobalData.Dt));
+                var CdT = MatrixCalc.MatrixScalarMultiplication(finalGrid.CG, 1.0 / GlobalData.Dt);
+                var CdTT0 = MatrixCalc.MatrixVectorMultiplication(CdT, nextT);
+                var PPlusCtDT0 = MatrixCalc.AddVectors(finalGrid.PG, CdTT0);
+                nextT = EquationHelper.Solve(HPlusCdT, PPlusCtDT0);
                 finalGrid.SetNodesTemperature(nextT);
-                var limes = MatrixHelper.FindMinAndMax(nextT);
-                Console.WriteLine(limes.max  + " " + limes.min);
+                var limes = MatrixCalc.FindMinAndMax(nextT);
+                Console.WriteLine("Min: " + limes.min  + " Max: " + limes.max);
             }
-
             Console.ReadKey();
-
-
         }
 
         private static Grid CalculateLocalMatrix(Grid grid)
         {
-            const int conductivity = 25;
-            const double specificHeat = 700;
-            const double density = 7800;
-            const double alfa = 300;
-            var universalElemenet = new UniversalElement();
-            //po elementach
-            for (var i = 0; i < grid.Elements.Length; i++)
+  
+            var universalElement = new UniversalElement();
+            foreach (var element in grid.Elements)
             {
-                var x1 = grid.Nodes[grid.Elements[i].Id[0]].X;
-                var y1 = grid.Nodes[grid.Elements[i].Id[0]].Y;
-                var x2 = grid.Nodes[grid.Elements[i].Id[1]].X;
-                var y2 = grid.Nodes[grid.Elements[i].Id[1]].Y;
-                var x3 = grid.Nodes[grid.Elements[i].Id[2]].X;
-                var y3 = grid.Nodes[grid.Elements[i].Id[2]].Y;
-                var x4 = grid.Nodes[grid.Elements[i].Id[3]].X;
-                var y4 = grid.Nodes[grid.Elements[i].Id[3]].Y;
+                var x1 = grid.Nodes[element.Id[0]].X;
+                var y1 = grid.Nodes[element.Id[0]].Y;
+                var x2 = grid.Nodes[element.Id[1]].X;
+                var y2 = grid.Nodes[element.Id[1]].Y;
+                var x3 = grid.Nodes[element.Id[2]].X;
+                var y3 = grid.Nodes[element.Id[2]].Y;
+                var x4 = grid.Nodes[element.Id[3]].X;
+                var y4 = grid.Nodes[element.Id[3]].Y;
                 var elementH = new double[,]
                 {
                     {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}
@@ -66,134 +52,141 @@ namespace MESMARCIN
                 {
                     {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}
                 };
-                //punty calkowania
-                for (var j = 0; j < GlobalData.nPc * GlobalData.nPc; j++)
+
+                for (var j = 0; j < GlobalData.NPc * GlobalData.NPc; j++)
                 {
-                    var jakobian = new Jakobian(x1, y1, x2, y2, x3, y3, x4, y4, j, universalElemenet);
-                    // potrzebujemy tego bo jest we wzorze
+                    var jacobian = new Jacobian(x1, y1, x2, y2, x3, y3, x4, y4, j, universalElement);
+
                     var dNdX = new double[4];
                     var dNdY = new double[4];
                     var N = new double[4];
 
-                    //macierz Heigth
                     for (var k = 0; k < 4; k++)
                     {
-                        dNdX[k] = jakobian.ValueT[0, 0] * universalElemenet.dNdE[j, k] +
-                                    jakobian.ValueT[0, 1] * universalElemenet.dNdN[j, k];
+                        dNdX[k] = jacobian.ValueT[0, 0] * universalElement.dNdE[j, k] +
+                                  jacobian.ValueT[0, 1] * universalElement.dNdN[j, k];
                     }
                     for (var k = 0; k < 4; k++)
                     {
-                        dNdY[k] = jakobian.ValueT[1, 0] * universalElemenet.dNdE[j, k] +
-                                  jakobian.ValueT[1, 1] * universalElemenet.dNdN[j, k];
+                        dNdY[k] = jacobian.ValueT[1, 0] * universalElement.dNdE[j, k] +
+                                  jacobian.ValueT[1, 1] * universalElement.dNdN[j, k];
                     }
 
+                    var matrixDx = MatrixCalc.TranspositionAndMultiplication(dNdX);
+                    var matrixDy = MatrixCalc.TranspositionAndMultiplication(dNdY);
+                    var detAndWeights = jacobian.Det * universalElement.weightsC[0] * universalElement.weightsC[1];
+                    matrixDx = MatrixCalc.MatrixScalarMultiplication(matrixDx, detAndWeights);
+                    matrixDy = MatrixCalc.MatrixScalarMultiplication(matrixDy, detAndWeights);
 
-                    var matrixDx = MatrixHelper.TranspositionAndMultipication(dNdX);
-                    var matrixDy = MatrixHelper.TranspositionAndMultipication(dNdY);
-                    var detAndWeights = jakobian.Det * universalElemenet.weightsC[0] * universalElemenet.weightsC[1];
-                    matrixDx = MatrixHelper.MatrixScalarMultiplication(matrixDx, detAndWeights);
-                    matrixDy = MatrixHelper.MatrixScalarMultiplication(matrixDy, detAndWeights);
-
-                    var sumMatrix = MatrixHelper.AddMatrix(matrixDx, matrixDy);
-                    sumMatrix = MatrixHelper.MatrixScalarMultiplication(sumMatrix, conductivity);
-                    elementH = MatrixHelper.AddMatrix(elementH, sumMatrix);
+                    var sumMatrix = MatrixCalc.AddMatrix(matrixDx, matrixDy);
+                    sumMatrix = MatrixCalc.MatrixScalarMultiplication(sumMatrix, GlobalData.Conductivity);
+                    elementH = MatrixCalc.AddMatrix(elementH, sumMatrix);
                     
-
-                    //MACIERZ C
                     for (var k = 0; k < 4; k++)
                     {
-                        N[k] = universalElemenet.N[j, k];
+                        N[k] = universalElement.N[j, k];
                     }
 
-                    var cRazyCT = MatrixHelper.TranspositionAndMultipication(N);
-                    var actualC = MatrixHelper.MatrixScalarMultiplication(cRazyCT, detAndWeights * density * specificHeat);
-                    elementC = MatrixHelper.AddMatrix(elementC, actualC);
+                    var cRazyCT = MatrixCalc.TranspositionAndMultiplication(N);
+                    var actualC = MatrixCalc.MatrixScalarMultiplication(cRazyCT, detAndWeights * GlobalData.Density * GlobalData.SpecificHeat);
+                    elementC = MatrixCalc.AddMatrix(elementC, actualC);
                 }
-                //Macierz Height + czescioweP   + wektor obciazen p (druga czesc)
+
                 var elementToAddToH = new double[,]
                 {
                     {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}
                 };
                 for (var j = 0; j < 8; j++)
                 {
-                    if (j == 0 || j == 1)
+                    switch (j)
                     {
-                        if (grid.Nodes[grid.Elements[i].Id[0]].IsMarginal &&
-                            grid.Nodes[grid.Elements[i].Id[1]].IsMarginal)
+                        case 0:
+                        case 1:
                         {
-                            var detBoku = GlobalData.Length / (GlobalData.NodesLengthNumber - 1) * 0.5;
-                            var nVector = new double[4];
-                            for (var k = 0; k < 4; k++)
+                            if (grid.Nodes[element.Id[0]].IsMarginal &&
+                                grid.Nodes[element.Id[1]].IsMarginal)
                             {
-                                nVector[k] = universalElemenet.NOutside[j, k];
+                                var sideDeterminant = GlobalData.Width / (GlobalData.NodesLengthNumber - 1) * 0.5;
+                                var nVector = new double[4];
+                                for (var k = 0; k < 4; k++)
+                                {
+                                    nVector[k] = universalElement.NOutside[j, k];
+                                }
+                                var pcMatrix = MatrixCalc.TranspositionAndMultiplication(nVector);
+                                elementToAddToH = MatrixCalc.AddMatrix(elementToAddToH,
+                                MatrixCalc.MatrixScalarMultiplication(pcMatrix, sideDeterminant));
+                                var pcVector = MatrixCalc.VectorScalarMultiplication(nVector, GlobalData.AmbientTemperature * sideDeterminant * GlobalData.Alfa);
+                                element.PL = MatrixCalc.AddVectors(element.PL, pcVector);
                             }
-                            var pcMatrix = MatrixHelper.TranspositionAndMultipication(nVector);
-                            elementToAddToH = MatrixHelper.AddMatrix(elementToAddToH,
-                            MatrixHelper.MatrixScalarMultiplication(pcMatrix, detBoku));
-                            var pcVector = MatrixHelper.VectorScalarMultiplication(nVector, GlobalData.AmbientTemperature * detBoku * alfa);
-                            grid.Elements[i].PL = MatrixHelper.AddVectors(grid.Elements[i].PL, pcVector);
+                            break;
                         }
-                    }
-                    if (j == 2 || j == 3)
-                    {
-                        if (grid.Nodes[grid.Elements[i].Id[1]].IsMarginal &&
-                            grid.Nodes[grid.Elements[i].Id[2]].IsMarginal)
+                        case 2:
+                        case 3:
                         {
-                            var detBoku = GlobalData.Height / (GlobalData.NodesHeightNumber - 1) * 0.5;
-                            var nVector = new double[4];
-                            for (var k = 0; k < 4; k++)
+                            if (grid.Nodes[element.Id[1]].IsMarginal &&
+                                grid.Nodes[element.Id[2]].IsMarginal)
                             {
-                                nVector[k] = universalElemenet.NOutside[j, k];
+                                var sideDeterminant = GlobalData.Height / (GlobalData.NodesHeightNumber - 1) * 0.5;
+                                var nVector = new double[4];
+                                for (var k = 0; k < 4; k++)
+                                {
+                                    nVector[k] = universalElement.NOutside[j, k];
+                                }
+                                var pcMatrix = MatrixCalc.TranspositionAndMultiplication(nVector);
+                                elementToAddToH = MatrixCalc.AddMatrix(elementToAddToH,
+                                    MatrixCalc.MatrixScalarMultiplication(pcMatrix, sideDeterminant));
+                                var pcVector = MatrixCalc.VectorScalarMultiplication(nVector, GlobalData.AmbientTemperature * sideDeterminant * GlobalData.Alfa);
+                                element.PL = MatrixCalc.AddVectors(element.PL, pcVector);
                             }
-                            var pcMatrix = MatrixHelper.TranspositionAndMultipication(nVector);
-                            elementToAddToH = MatrixHelper.AddMatrix(elementToAddToH,
-                            MatrixHelper.MatrixScalarMultiplication(pcMatrix, detBoku));
-                            var pcVector = MatrixHelper.VectorScalarMultiplication(nVector, GlobalData.AmbientTemperature * detBoku * alfa);
-                            grid.Elements[i].PL = MatrixHelper.AddVectors(grid.Elements[i].PL, pcVector);
+                            break;
                         }
-                    }
-                    if (j == 4 || j == 5)
-                    {
-                        if (grid.Nodes[grid.Elements[i].Id[2]].IsMarginal &&
-                            grid.Nodes[grid.Elements[i].Id[3]].IsMarginal)
+                        case 4:
+                        case 5:
                         {
-                            var detBoku = GlobalData.Length / (GlobalData.NodesLengthNumber - 1) * 0.5;
-                            var nVector = new double[4];
-                            for (var k = 0; k < 4; k++)
+                            if (grid.Nodes[element.Id[2]].IsMarginal &&
+                                grid.Nodes[element.Id[3]].IsMarginal)
                             {
-                                nVector[k] = universalElemenet.NOutside[j, k];
+                                var sideDeterminant = GlobalData.Width / (GlobalData.NodesLengthNumber - 1) * 0.5;
+                                var nVector = new double[4];
+                                for (var k = 0; k < 4; k++)
+                                {
+                                    nVector[k] = universalElement.NOutside[j, k];
+                                }
+                                var pcMatrix = MatrixCalc.TranspositionAndMultiplication(nVector);
+                                elementToAddToH = MatrixCalc.AddMatrix(elementToAddToH,
+                                    MatrixCalc.MatrixScalarMultiplication(pcMatrix, sideDeterminant));
+                                var pcVector = MatrixCalc.VectorScalarMultiplication(nVector, GlobalData.AmbientTemperature * sideDeterminant * GlobalData.Alfa);
+                                element.PL = MatrixCalc.AddVectors(element.PL, pcVector);
                             }
-                            var pcMatrix = MatrixHelper.TranspositionAndMultipication(nVector);
-                            elementToAddToH = MatrixHelper.AddMatrix(elementToAddToH,
-                            MatrixHelper.MatrixScalarMultiplication(pcMatrix, detBoku));
-                            var pcVector = MatrixHelper.VectorScalarMultiplication(nVector, GlobalData.AmbientTemperature * detBoku * alfa);
-                            grid.Elements[i].PL = MatrixHelper.AddVectors(grid.Elements[i].PL, pcVector);
+                            break;
                         }
-                    }
-                    if (j == 6 || j == 7)
-                    {
-                        if (grid.Nodes[grid.Elements[i].Id[3]].IsMarginal &&
-                            grid.Nodes[grid.Elements[i].Id[0]].IsMarginal)
+                        case 6:
+                        case 7:
                         {
-                            var detBoku = GlobalData.Height / (GlobalData.NodesHeightNumber - 1) * 0.5;
-                            var nVector = new double[4];
-                            for (var k = 0; k < 4; k++)
+                            if (grid.Nodes[element.Id[3]].IsMarginal &&
+                                grid.Nodes[element.Id[0]].IsMarginal)
                             {
-                                nVector[k] = universalElemenet.NOutside[j, k];
+                                var sideDeterminant = GlobalData.Height / (GlobalData.NodesHeightNumber - 1) * 0.5;
+                                var nVector = new double[4];
+                                for (var k = 0; k < 4; k++)
+                                {
+                                    nVector[k] = universalElement.NOutside[j, k];
+                                }
+                                var pcMatrix = MatrixCalc.TranspositionAndMultiplication(nVector);
+                                elementToAddToH = MatrixCalc.AddMatrix(elementToAddToH,
+                                    MatrixCalc.MatrixScalarMultiplication(pcMatrix, sideDeterminant));
+                                var pcVector = MatrixCalc.VectorScalarMultiplication(nVector, GlobalData.AmbientTemperature * sideDeterminant * GlobalData.Alfa);
+                                element.PL = MatrixCalc.AddVectors(element.PL, pcVector);
                             }
-                            var pcMatrix = MatrixHelper.TranspositionAndMultipication(nVector);
-                            elementToAddToH = MatrixHelper.AddMatrix(elementToAddToH,
-                            MatrixHelper.MatrixScalarMultiplication(pcMatrix, detBoku));
-                            var pcVector = MatrixHelper.VectorScalarMultiplication(nVector, GlobalData.AmbientTemperature * detBoku * alfa);
-                            grid.Elements[i].PL = MatrixHelper.AddVectors(grid.Elements[i].PL, pcVector);
+                            break;
                         }
                     }
                 }
 
-                elementToAddToH = MatrixHelper.MatrixScalarMultiplication(elementToAddToH, alfa);
-                elementH = MatrixHelper.AddMatrix(elementH, elementToAddToH);
-                grid.Elements[i].HL = elementH;
-                grid.Elements[i].CL = elementC;
+                elementToAddToH = MatrixCalc.MatrixScalarMultiplication(elementToAddToH, GlobalData.Alfa);
+                elementH = MatrixCalc.AddMatrix(elementH, elementToAddToH);
+                element.HL = elementH;
+                element.CL = elementC;
             }
 
            
@@ -205,7 +198,6 @@ namespace MESMARCIN
         {
             foreach (var actualElement in grid.Elements)
             {
-                // 4 - ilosc nodow dla elementu
                 for (var i = 0; i < 4; i++)
                 {
                     for (var j = 0; j < 4; j++)

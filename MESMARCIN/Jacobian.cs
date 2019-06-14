@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace MESMARCIN
 {
-    public class Jakobian
+    public class Jacobian
     {
         public double [,] Value { get; }
         public double Det { get; }
         public double[,] ValueT { get; }
 
 
-        public Jakobian(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4, int whichIntegralPoint, UniversalElement universalElement)
+        public Jacobian(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4, int whichIntegralPoint, UniversalElement universalElement)
         {
             this.Value = CalculateValue(x1, y1, x2, y2, x3, y3, x4, y4, whichIntegralPoint, universalElement);
             this.Det = CalculateDet(this.Value);
@@ -38,12 +38,12 @@ namespace MESMARCIN
             return value;
         }
 
-        public double CalculateDet(double[,] value)
+        private double CalculateDet(double[,] value)
         {
             return value[0, 0] * value[1, 1] - value[0, 1] * value[1, 0];
         }
 
-        public double[,] CalculateTValue(double[,] value)
+        private double[,] CalculateTValue(double[,] value)
         {
             var tValue = new double[2, 2];
             tValue[0, 0] = value[1, 1] / this.Det;
