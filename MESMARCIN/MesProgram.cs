@@ -6,25 +6,25 @@ namespace MesMarcin
     {
         static void Main()
         {
-            var finalGrid = Aggregator.AggregateToGlobalMatrix(GenerateAllLocalMatricesForGrid(new Grid()));
+            var grid = Aggregator.AggregateToGlobalMatrix(GenerateAllLocalMatricesForGrid(new Grid()));
             var nextT = new double[GlobalData.NodesCount];
             for (var i = 0; i < nextT.Length; i++)
             {
-                nextT[i] = finalGrid.Nodes[i].T;
+                nextT[i] = grid.Nodes[i].T;
             }
 
             for (var i = 0; i < GlobalData.SimulationTime / GlobalData.Dt; i++)
             {
-                var HPlusCdT = MatrixCalculator.AddMatrix(finalGrid.HG, MatrixCalculator.MatrixScalarMultiplication(finalGrid.CG, 1.0 / GlobalData.Dt));
-                var CdT = MatrixCalculator.MatrixScalarMultiplication(finalGrid.CG, 1.0 / GlobalData.Dt);
+                var HPlusCdT = MatrixCalculator.AddMatrix(grid.HG, MatrixCalculator.MatrixScalarMultiplication(grid.CG, 1.0 / GlobalData.Dt));
+                var CdT = MatrixCalculator.MatrixScalarMultiplication(grid.CG, 1.0 / GlobalData.Dt);
                 var CdTT0 = MatrixCalculator.MatrixVectorMultiplication(CdT, nextT);
-                var PPlusCtDT0 = MatrixCalculator.AddVectors(finalGrid.PG, CdTT0);
+                var PPlusCtDT0 = MatrixCalculator.AddVectors(grid.PG, CdTT0);
                 nextT = EquationHelper.Solve(HPlusCdT, PPlusCtDT0);
-                finalGrid.SetNodesTemperature(nextT);
+                grid.SetNodesTemperature(nextT);
                 var limes = MatrixCalculator.FindMinAndMax(nextT);
                 Console.WriteLine("Min: " + limes.min  + " Max: " + limes.max);
             }
-            Console.ReadKey();
+            grid.SaveToFile();
         }
 
         private static Grid GenerateAllLocalMatricesForGrid(Grid grid)

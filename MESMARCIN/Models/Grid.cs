@@ -1,15 +1,22 @@
-﻿namespace MesMarcin
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+
+namespace MesMarcin
 {
     public class Grid
     {
         public Element[] Elements { get; }
         public Node[] Nodes { get; }
+        public List<double[]> Snapshots { get; }
         public double [,] HG { get; }
         public double[,] CG { get; }
         public double [] PG { get; }
 
         public Grid()
         {
+            this.Snapshots = new List<double[]>();
             this.Elements = new Element[GlobalData.ElementsCount];
             this.Nodes = new Node[GlobalData.NodesCount];
             for (var i = 0; i < GlobalData.ElementsCount; i++)
@@ -77,6 +84,35 @@
             {
                 Nodes[i].T = temperatures[i];
             }
+            MakeTemperaturesSnapshot(temperatures);
+        }
+
+        private void MakeTemperaturesSnapshot(double [] temperatures)
+        {
+            var temperaturesToSnapshot = new double[temperatures.Length];
+            for (var i = 0; i < temperatures.Length; i++)
+            {
+                temperaturesToSnapshot[i] = temperatures[i];
+            }
+            Snapshots.Add(temperaturesToSnapshot);
+        }
+
+        public void SaveToFile()
+        {
+            var i = 0;
+            foreach (var snapshot in Snapshots)
+            {
+                using (var streamWriter = new StreamWriter($"C:\\Users\\marci\\Desktop\\FilesToMatlab\\plik" + i +".txt"))
+                {
+                    for (var j = 1; j <= snapshot.Length; j++)
+                    {
+                        streamWriter.Write(snapshot[j-1].ToString("0.0", CultureInfo.InvariantCulture));
+                        streamWriter.Write(j % GlobalData.NodesHeightNumber != 0 ? "," : Environment.NewLine);
+                    }
+                }
+                i++;
+            }
+
         }
     }
 }
