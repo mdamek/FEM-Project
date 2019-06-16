@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MesMarcin
 {
@@ -12,7 +13,6 @@ namespace MesMarcin
             {
                 nextT[i] = grid.Nodes[i].T;
             }
-
             for (var i = 0; i < GlobalData.SimulationTime / GlobalData.Dt; i++)
             {
                 var HPlusCdT = MatrixCalculator.AddMatrix(grid.HG, MatrixCalculator.MatrixScalarMultiplication(grid.CG, 1.0 / GlobalData.Dt));
@@ -30,6 +30,7 @@ namespace MesMarcin
         private static Grid GenerateAllLocalMatricesForGrid(Grid grid)
         {
             var universalElement = new UniversalElement();
+            var actualElement = 0;
             foreach (var element in grid.Elements)
             {
                 var x1 = grid.Nodes[element.Id[0]].X;
@@ -92,49 +93,62 @@ namespace MesMarcin
                 {
                     {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}
                 };
-                for (var j = 0; j < 8; j++)
+                if (grid.SwitchOffBoundaryConditionElements.Contains(actualElement) == false)
                 {
-                    switch (j)
+
+
+                    for (var j = 0; j < 8; j++)
                     {
-                        case 0:
-                        case 1:
+                        switch (j)
                         {
-                            if (grid.Nodes[element.Id[0]].IsMarginal &&
-                                grid.Nodes[element.Id[1]].IsMarginal)
+                            case 0:
+                            case 1:
                             {
-                                elementToAddToH = SideCalculations(universalElement, j, elementToAddToH, element, Side.Width);
+                                if (grid.Nodes[element.Id[0]].IsMarginal &&
+                                    grid.Nodes[element.Id[1]].IsMarginal)
+                                {
+                                    elementToAddToH = SideCalculations(universalElement, j, elementToAddToH, element,
+                                        Side.Width);
+                                }
+
+                                break;
                             }
-                            break;
-                        }
-                        case 2:
-                        case 3:
-                        {
-                            if (grid.Nodes[element.Id[1]].IsMarginal &&
-                                grid.Nodes[element.Id[2]].IsMarginal)
+                            case 2:
+                            case 3:
                             {
-                                elementToAddToH = SideCalculations(universalElement, j, elementToAddToH, element, Side.Height);
+                                if (grid.Nodes[element.Id[1]].IsMarginal &&
+                                    grid.Nodes[element.Id[2]].IsMarginal)
+                                {
+                                    elementToAddToH = SideCalculations(universalElement, j, elementToAddToH, element,
+                                        Side.Height);
+                                }
+
+                                break;
                             }
-                            break;
-                        }
-                        case 4:
-                        case 5:
-                        {
-                            if (grid.Nodes[element.Id[2]].IsMarginal &&
-                                grid.Nodes[element.Id[3]].IsMarginal)
+                            case 4:
+                            case 5:
                             {
-                                elementToAddToH = SideCalculations(universalElement, j, elementToAddToH, element, Side.Width);
+                                if (grid.Nodes[element.Id[2]].IsMarginal &&
+                                    grid.Nodes[element.Id[3]].IsMarginal)
+                                {
+                                    elementToAddToH = SideCalculations(universalElement, j, elementToAddToH, element,
+                                        Side.Width);
+                                }
+
+                                break;
                             }
-                            break;
-                        }
-                        case 6:
-                        case 7:
-                        {
-                            if (grid.Nodes[element.Id[3]].IsMarginal &&
-                                grid.Nodes[element.Id[0]].IsMarginal)
+                            case 6:
+                            case 7:
                             {
-                                elementToAddToH = SideCalculations(universalElement, j, elementToAddToH, element, Side.Height);
+                                if (grid.Nodes[element.Id[3]].IsMarginal &&
+                                    grid.Nodes[element.Id[0]].IsMarginal)
+                                {
+                                    elementToAddToH = SideCalculations(universalElement, j, elementToAddToH, element,
+                                        Side.Height);
+                                }
+
+                                break;
                             }
-                            break;
                         }
                     }
                 }

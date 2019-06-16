@@ -13,9 +13,21 @@ namespace MesMarcin
         public double [,] HG { get; }
         public double[,] CG { get; }
         public double [] PG { get; }
+        public List<int> NodesInsideChimney { get; }
+        public List<int> SwitchOffBoundaryConditionElements { get; }
 
         public Grid()
         {
+            this.NodesInsideChimney =new List<int>
+            {
+                36, 37, 38, 39, 40, 47, 48, 49, 50, 51, 58, 59, 60, 61,
+                62, 69, 70, 71, 72, 73, 80, 81, 82, 83, 84
+            };
+            this.SwitchOffBoundaryConditionElements = new List<int>
+            {
+                22, 23, 24, 25, 26, 27, 37, 47, 57, 67, 77, 76, 75, 74, 73, 72, 32, 42, 52, 62, 72
+
+            };
             this.Snapshots = new List<double[]>();
             this.Elements = new Element[GlobalData.ElementsCount];
             this.Nodes = new Node[GlobalData.NodesCount];
@@ -39,29 +51,19 @@ namespace MesMarcin
                 initialTemperatureVector[i] = GlobalData.InitialTemperature;
             }
             SetNodesTemperature(initialTemperatureVector);
+        }
 
-            var hotterNodes = new List<int>
+        private void SetInsideChimneyNodesTemperature()
+        {
+            
+
+            for (var i = 0; i < Nodes.Length; i++)
             {
-                24, 25, 26, 27, 28, 29, 30, 35, 36, 37, 38, 39, 40, 41, 46, 47, 48, 49, 50, 51, 52, 57, 58, 59, 60, 61,
-                62, 63, 68, 69, 70, 71, 72, 73, 74, 79, 80, 81, 82, 83, 84, 85, 90, 91, 92, 93, 94, 95, 96
-            };
-
-
-            //set inside temperature
-            for (int i = 0; i < Nodes.Length; i++)
-            {
-                if (hotterNodes.Contains(i) == true)
+                if (this.NodesInsideChimney.Contains(i))
                 {
-                    Nodes[i].T = 300;
+                    Nodes[i].T = GlobalData.AmbientTemperature;
                 }
             }
-            for (int i = 0; i < Nodes.Length; i++)
-            {
-                if(i % 11 == 0)
-                    Console.WriteLine();
-                Console.Write(Nodes[i].T + " ");
-            }
-
         }
 
         private void FullNodesAndElements()
@@ -113,6 +115,10 @@ namespace MesMarcin
             for (var i = 0; i < Nodes.Length; i++)
             {
                 Nodes[i].T = temperatures[i];
+                if (NodesInsideChimney.Contains(i))
+                {
+                    Nodes[i].T = GlobalData.AmbientTemperature;
+                }  
             }
             MakeTemperaturesSnapshot(temperatures);
         }
@@ -129,20 +135,41 @@ namespace MesMarcin
 
         public void SaveToFile()
         {
+            System.IO.DirectoryInfo di = new DirectoryInfo($"C:\\Users\\marci\\Desktop\\FilesToMatlab");
+
+            foreach (FileInfo file in di.GetFiles())
+            {
+                file.Delete();
+            }
             var i = 0;
             foreach (var snapshot in Snapshots)
             {
-                using (var streamWriter = new StreamWriter($"C:\\Users\\marci\\Desktop\\FilesToMatlab\\plik" + i +".txt"))
+                using (var streamWriter = new StreamWriter($"C:\\Users\\marci\\Desktop\\FilesToMatlab\\plik" + i + ".txt"))
                 {
+                    //if (i == Snapshots.Count - 1)
+                    //{
+                    //    var nodesInsideChimney = new List<int>
+                    //    {
+                    //        36, 37, 38, 39, 40, 47, 48, 49, 50, 51, 58, 59, 60, 61,
+                    //        62, 69, 70, 71, 72, 73, 80, 81, 82, 83, 84
+                    //    };
+
+                    //    for (var k = 0; k < Nodes.Length; k++)
+                    //    {
+                    //        if (nodesInsideChimney.Contains(k))
+                    //        {
+                    //            Snapshots[i][k] =0;
+                    //        }
+                    //    }
+                    //}
                     for (var j = 1; j <= snapshot.Length; j++)
                     {
-                        streamWriter.Write(snapshot[j-1].ToString("0.0", CultureInfo.InvariantCulture));
+                        streamWriter.Write(snapshot[j - 1].ToString("0.0", CultureInfo.InvariantCulture));
                         streamWriter.Write(j % GlobalData.NodesHeightNumber != 0 ? "," : Environment.NewLine);
                     }
                 }
                 i++;
             }
-
         }
     }
 }
