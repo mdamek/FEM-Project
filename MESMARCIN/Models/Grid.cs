@@ -39,6 +39,29 @@ namespace MesMarcin
                 initialTemperatureVector[i] = GlobalData.InitialTemperature;
             }
             SetNodesTemperature(initialTemperatureVector);
+
+            var hotterNodes = new List<int>
+            {
+                24, 25, 26, 27, 28, 29, 30, 35, 36, 37, 38, 39, 40, 41, 46, 47, 48, 49, 50, 51, 52, 57, 58, 59, 60, 61,
+                62, 63, 68, 69, 70, 71, 72, 73, 74, 79, 80, 81, 82, 83, 84, 85, 90, 91, 92, 93, 94, 95, 96
+            };
+
+
+            //set inside temperature
+            for (int i = 0; i < Nodes.Length; i++)
+            {
+                if (hotterNodes.Contains(i) == true)
+                {
+                    Nodes[i].T = 300;
+                }
+            }
+            for (int i = 0; i < Nodes.Length; i++)
+            {
+                if(i % 11 == 0)
+                    Console.WriteLine();
+                Console.Write(Nodes[i].T + " ");
+            }
+
         }
 
         private void FullNodesAndElements()
@@ -55,9 +78,16 @@ namespace MesMarcin
                         Nodes[k].IsMarginal = false;
                         Nodes[k].X = i * deltaX;
                         Nodes[k].Y = j * deltaY;
-                        if (Nodes[k].X == 0 || Nodes[k].X == GlobalData.Width)
+                        if (Nodes[k].X > 0.09 && Nodes[k].X < 0.11 && Nodes[k].Y >= 0.09 && Nodes[k].Y <= 0.41)
                             Nodes[k].IsMarginal = true;
-                        if (Nodes[k].Y == 0 || Nodes[k].Y == GlobalData.Height)
+
+                        if (Nodes[k].X > 0.39 && Nodes[k].X < 0.41 && Nodes[k].Y >= 0.09 && Nodes[k].Y <= 0.41)
+                            Nodes[k].IsMarginal = true;
+
+                        if (Nodes[k].Y > 0.09 && Nodes[k].Y < 0.11 && Nodes[k].X >= 0.09 && Nodes[k].X <= 0.41)
+                            Nodes[k].IsMarginal = true;
+
+                        if (Nodes[k].Y > 0.39 && Nodes[k].Y < 0.41 && Nodes[k].X >= 0.09 && Nodes[k].X <= 0.41)
                             Nodes[k].IsMarginal = true;
                         k++;
                     }

@@ -16,7 +16,7 @@ namespace MesMarcin
         public static readonly double AmbientTemperature;
         public static readonly double SimulationTime;
         public static readonly double Dt;
-        public static readonly int Conductivity;
+        public static readonly double Conductivity;
         public static readonly double SpecificHeat;
         public static readonly double Density;
         public static readonly double Alfa;
@@ -34,7 +34,7 @@ namespace MesMarcin
             AmbientTemperature = Convert.ToDouble(readFile[6].Split('=')[1]);
             SimulationTime = Convert.ToDouble(readFile[7].Split('=')[1]);
             Dt = Convert.ToDouble(readFile[8].Split('=')[1]);
-            Conductivity = Convert.ToInt32(readFile[9].Split('=')[1]);
+            Conductivity = Convert.ToDouble(readFile[9].Split('=')[1]);
             SpecificHeat = Convert.ToDouble(readFile[10].Split('=')[1]);
             Density = Convert.ToDouble(readFile[11].Split('=')[1]);
             Alfa = Convert.ToDouble(readFile[12].Split('=')[1]);
