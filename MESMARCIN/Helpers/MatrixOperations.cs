@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Linq;
 
 namespace MesMarcin
 {
-    public static class MatrixCalculator
+    public static class Matrix
     {
         public static double[,] TranspositionAndMultiplication(double[] vector)
         {
@@ -18,7 +17,7 @@ namespace MesMarcin
             return matrix;
         }
 
-        public static double[,] AddMatrix(double[,] matrix1, double[,] matrix2)
+        public static double[,] Add(double[,] matrix1, double[,] matrix2)
         {
             var answerMatrix = new double[matrix1.GetLength(0), matrix1.GetLength(0)];
             for (var i = 0; i < matrix1.GetLength(0); i++)
@@ -31,7 +30,7 @@ namespace MesMarcin
             return answerMatrix;
         }
 
-        public static double[,] MatrixScalarMultiplication(double[,] matrix, double scalar)
+        public static double[,] ScalarMultiplication(double[,] matrix, double scalar)
         {
             var answerMatrix = new double[matrix.GetLength(0), matrix.GetLength(0)];
             for (var i = 0; i < matrix.GetLength(0); i++)
@@ -44,7 +43,7 @@ namespace MesMarcin
             return answerMatrix;
         }
 
-        public static void PrintMatrix(double[,] matrix)
+        public static void Print(double[,] matrix)
         {
             for (var i = 0; i < matrix.GetLength(0); i++)
             {
@@ -57,35 +56,7 @@ namespace MesMarcin
             }
         }
 
-        public static double[] VectorScalarMultiplication(double[] vector, double scalar)
-        {
-            var answerVector = new double[vector.Length];
-            for (var i = 0; i < answerVector.Length; i++)
-            {
-                answerVector[i] = vector[i] * scalar;
-            }
-            return answerVector;
-        }
-
-        public static double[] AddVectors(double[] vector1, double[] vector2)
-        {
-            var answerVector = new double[vector1.Length];
-            for (var i = 0; i < answerVector.Length; i++)
-            {
-                answerVector[i] = vector1[i] + vector2[i];
-            }
-            return answerVector;
-        }
-
-        public static void PrintVector(double[] vector)
-        {
-            foreach (var value in vector)
-            {
-                Console.Write(value + " ");
-            }
-        }
-
-        public static double[] MatrixVectorMultiplication(double[,] matrix, double[] vector)
+        public static double[] WithVectorMultiplication(double[,] matrix, double[] vector)
         {
             var answer = new double[vector.Length];
             for (var i = 0; i < matrix.GetLength(0); i++)
@@ -97,6 +68,5 @@ namespace MesMarcin
             }
             return answer;
         }
-        public static (double min, double max) FindMinAndMax(double[] vector) => (vector.Min(), vector.Max());
     }
 }

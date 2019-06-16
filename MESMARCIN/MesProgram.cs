@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using MESMARCIN.Helpers;
 
 namespace MesMarcin
 {
@@ -15,13 +15,13 @@ namespace MesMarcin
             }
             for (var i = 0; i < GlobalData.SimulationTime / GlobalData.Dt; i++)
             {
-                var HPlusCdT = MatrixCalculator.AddMatrix(grid.HG, MatrixCalculator.MatrixScalarMultiplication(grid.CG, 1.0 / GlobalData.Dt));
-                var CdT = MatrixCalculator.MatrixScalarMultiplication(grid.CG, 1.0 / GlobalData.Dt);
-                var CdTT0 = MatrixCalculator.MatrixVectorMultiplication(CdT, nextT);
-                var PPlusCtDT0 = MatrixCalculator.AddVectors(grid.PG, CdTT0);
+                var HPlusCdT = Matrix.Add(grid.HG, Matrix.ScalarMultiplication(grid.CG, 1.0 / GlobalData.Dt));
+                var CdT = Matrix.ScalarMultiplication(grid.CG, 1.0 / GlobalData.Dt);
+                var CdTT0 = Matrix.WithVectorMultiplication(CdT, nextT);
+                var PPlusCtDT0 = VectorOperations.Add(grid.PG, CdTT0);
                 nextT = EquationHelper.Solve(HPlusCdT, PPlusCtDT0);
                 grid.SetNodesTemperature(nextT);
-                var limes = MatrixCalculator.FindMinAndMax(nextT);
+                var limes = VectorOperations.FindMinAndMax(nextT);
                 Console.WriteLine("Min: " + limes.min  + " Max: " + limes.max);
             }
             grid.SaveToFile();
@@ -69,24 +69,24 @@ namespace MesMarcin
                                   jacobian.ValueT[1, 1] * universalElement.dNdN[j, k];
                     }
 
-                    var matrixDx = MatrixCalculator.TranspositionAndMultiplication(dNdX);
-                    var matrixDy = MatrixCalculator.TranspositionAndMultiplication(dNdY);
+                    var matrixDx = Matrix.TranspositionAndMultiplication(dNdX);
+                    var matrixDy = Matrix.TranspositionAndMultiplication(dNdY);
                     var detAndWeights = jacobian.Det * universalElement.weightsC[0] * universalElement.weightsC[1];
-                    matrixDx = MatrixCalculator.MatrixScalarMultiplication(matrixDx, detAndWeights);
-                    matrixDy = MatrixCalculator.MatrixScalarMultiplication(matrixDy, detAndWeights);
+                    matrixDx = Matrix.ScalarMultiplication(matrixDx, detAndWeights);
+                    matrixDy = Matrix.ScalarMultiplication(matrixDy, detAndWeights);
 
-                    var sumMatrix = MatrixCalculator.AddMatrix(matrixDx, matrixDy);
-                    sumMatrix = MatrixCalculator.MatrixScalarMultiplication(sumMatrix, GlobalData.Conductivity);
-                    elementH = MatrixCalculator.AddMatrix(elementH, sumMatrix);
+                    var sumMatrix = Matrix.Add(matrixDx, matrixDy);
+                    sumMatrix = Matrix.ScalarMultiplication(sumMatrix, GlobalData.Conductivity);
+                    elementH = Matrix.Add(elementH, sumMatrix);
                     
                     for (var k = 0; k < 4; k++)
                     {
                         N[k] = universalElement.N[j, k];
                     }
 
-                    var cRazyCT = MatrixCalculator.TranspositionAndMultiplication(N);
-                    var actualC = MatrixCalculator.MatrixScalarMultiplication(cRazyCT, detAndWeights * GlobalData.Density * GlobalData.SpecificHeat);
-                    elementC = MatrixCalculator.AddMatrix(elementC, actualC);
+                    var cTimeCt = Matrix.TranspositionAndMultiplication(N);
+                    var actualC = Matrix.ScalarMultiplication(cTimeCt, detAndWeights * GlobalData.Density * GlobalData.SpecificHeat);
+                    elementC = Matrix.Add(elementC, actualC);
                 }
 
                 var elementToAddToH = new double[,]
@@ -153,8 +153,8 @@ namespace MesMarcin
                     }
                 }
 
-                elementToAddToH = MatrixCalculator.MatrixScalarMultiplication(elementToAddToH, GlobalData.Alfa);
-                elementH = MatrixCalculator.AddMatrix(elementH, elementToAddToH);
+                elementToAddToH = Matrix.ScalarMultiplication(elementToAddToH, GlobalData.Alfa);
+                elementH = Matrix.Add(elementH, elementToAddToH);
                 element.HL = elementH;
                 element.CL = elementC;
             }
@@ -178,10 +178,10 @@ namespace MesMarcin
                 nVector[k] = universalElement.NOutside[j, k];
             }
 
-            var pcMatrix = MatrixCalculator.TranspositionAndMultiplication(nVector);
-            elementToAddToH = MatrixCalculator.AddMatrix(elementToAddToH, MatrixCalculator.MatrixScalarMultiplication(pcMatrix, sideDeterminant));
-            var pcVector =MatrixCalculator.VectorScalarMultiplication(nVector, GlobalData.AmbientTemperature * sideDeterminant * GlobalData.Alfa);
-            element.PL = MatrixCalculator.AddVectors(element.PL, pcVector);
+            var pcMatrix = Matrix.TranspositionAndMultiplication(nVector);
+            elementToAddToH = Matrix.Add(elementToAddToH, Matrix.ScalarMultiplication(pcMatrix, sideDeterminant));
+            var pcVector =VectorOperations.WithScalarMultiplication(nVector, GlobalData.AmbientTemperature * sideDeterminant * GlobalData.Alfa);
+            element.PL = VectorOperations.Add(element.PL, pcVector);
             return elementToAddToH;
         }
     }

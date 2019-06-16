@@ -48,12 +48,13 @@
   <ItemGroup>
     <Compile Include="Helpers\Aggregator.cs" />
     <Compile Include="Helpers\DifferentialFormulas.cs" />
+    <Compile Include="Helpers\VectorOperations.cs" />
     <Compile Include="Models\Element.cs" />
     <Compile Include="Helpers\EquationHelper.cs" />
     <Compile Include="Helpers\GlobaData.cs" />
     <Compile Include="Models\Grid.cs" />
     <Compile Include="Models\Jacobian.cs" />
-    <Compile Include="Helpers\MatrixCalculator.cs" />
+    <Compile Include="Helpers\Matrix.cs" />
     <Compile Include="Models\Node.cs" />
     <Compile Include="MesProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
