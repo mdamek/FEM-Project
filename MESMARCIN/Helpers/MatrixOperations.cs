@@ -2,7 +2,7 @@
 
 namespace MesMarcin
 {
-    public static class Matrix
+    public static class MatrixOperations
     {
         public static double[,] TranspositionAndMultiplication(double[] vector)
         {
